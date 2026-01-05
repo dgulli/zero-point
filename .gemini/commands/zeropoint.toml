@@ -1,0 +1,47 @@
+description = "Copy .agent rules and workflows from zero-point repo to your project"
+
+prompt = """
+# Zero-Point Agent Bootstrap
+
+You are helping to set up the zero-point agent rules and workflows in this project.
+
+## Current Status
+The following commands were executed to sync the zero-point configuration:
+
+!{bash -c '
+set -e
+ZERO_POINT_DIR="${TMPDIR:-/tmp}/zero-point-cache"
+
+# Clone or update zero-point repo
+if [ -d "$ZERO_POINT_DIR" ]; then
+  echo "Updating zero-point cache..."
+  cd "$ZERO_POINT_DIR" && git pull --quiet origin main
+else
+  echo "Cloning zero-point repo..."
+  git clone --quiet https://github.com/dgulli/zero-point.git "$ZERO_POINT_DIR"
+fi
+
+# Create .agent directory if needed
+mkdir -p .agent
+
+# Copy rules and workflows
+echo "Copying .agent/rules..."
+cp -r "$ZERO_POINT_DIR/.agent/rules" .agent/
+
+echo "Copying .agent/workflows..."
+cp -r "$ZERO_POINT_DIR/.agent/workflows" .agent/
+
+echo ""
+echo "✅ Successfully synced zero-point configuration!"
+echo "Files copied to: $(pwd)/.agent/"
+ls -la .agent/
+'}
+
+## Next Steps
+Please inform the user:
+1. The zero-point rules and workflows have been copied to `.agent/` in their project
+2. They can customize these files for their project
+3. If they want to contribute changes back to zero-point, they should fork the repo and submit a PR
+
+If there were any errors above, help the user troubleshoot.
+"""
